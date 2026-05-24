@@ -1,0 +1,135 @@
+@{
+    ViewData["Title"] = "Harmonogram Rozładunków WMS";
+    var slots = ViewBag.Slots as List<RetailPromoEdiGateway.Core.Entities.WarehouseSlot> ?? new();
+    var pendingLines = ViewBag.PendingLines as List<RetailPromoEdiGateway.Core.Entities.PurchaseOrderLine> ?? new();
+}
+
+<div class="header-section">
+    <div class="page-title">
+        <h1>Harmonogram Rozładunków WMS</h1>
+        <p>Rezerwacja okien dostaw oraz zapobieganie wąskim gardłom na rampach rozładunkowych</p>
+    </div>
+</div>
+
+<!-- TempData Notification Alerts -->
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="temp-alert temp-alert-success">
+        ✅ @TempData["SuccessMessage"]
+    </div>
+}
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="temp-alert temp-alert-error">
+        ❌ @TempData["ErrorMessage"]
+    </div>
+}
+@if (TempData["WarningMessage"] != null)
+{
+    <div class="temp-alert temp-alert-warning">
+        ⚠️ @TempData["WarningMessage"]
+    </div>
+}
+
+<div class="booking-grid">
+    <!-- Booking Reservation Form -->
+    <div class="glass-card">
+        <h2 style="font-size: 1.25rem; font-weight: 700; margin-bottom: 1.5rem; color: #fff;">Zarezerwuj okno dostawy</h2>
+        
+        @if (!pendingLines.Any())
+        {
+            <p style="color: var(--color-text-muted); padding: 1rem 0;">Wszystkie pozycje zamówień mają już przydzielone sloty rozładunkowe.</p>
+        }
+        else
+        {
+            <form action="@Url.Action("Book", "Logistics")" method="post" class="booking-form">
+                <label style="display: block; font-size: 0.85rem; color: var(--color-text-muted); margin-bottom: 0.5rem; font-weight: 500;">
+                    Wybierz pozycję zamówienia
+                </label>
+                <select name="purchaseOrderLineId" required>
+                    @foreach (var line in pendingLines)
+                    {
+                        <option value="@line.Id">
+                            @line.ProductCode - @line.ProductName (@line.PurchaseOrder.Supplier.Name | PO: @line.PurchaseOrder.ErpOrderNumber)
+                        </option>
+                    }
+                </select>
+
+                <label style="display: block; font-size: 0.85rem; color: var(--color-text-muted); margin-bottom: 0.5rem; font-weight: 500;">
+                    Centrum Dystrybucyjne (DC)
+                </label>
+                <select name="dcCode" required>
+                    <option value="DC-WAW1">DC Warszawa 1 (Nadarzyn)</option>
+                    <option value="DC-POZ2">DC Poznań 2 (Komorniki)</option>
+                    <option value="DC-GDA3">DC Gdańsk 3 (Kowale)</option>
+                </select>
+
+                <label style="display: block; font-size: 0.85rem; color: var(--color-text-muted); margin-bottom: 0.5rem; font-weight: 500;">
+                    Data i godzina dostawy
+                </label>
+                <input type="datetime-local" name="bookedTime" required />
+
+                <label style="display: block; font-size: 0.85rem; color: var(--color-text-muted); margin-bottom: 0.5rem; font-weight: 500;">
+                    Numer Rampy (Bay Number)
+                </label>
+                <select name="bayNumber" required>
+                    <option value="Rampa 01">Rampa 01</option>
+                    <option value="Rampa 02">Rampa 02</option>
+                    <option value="Rampa 03">Rampa 03</option>
+                    <option value="Rampa 04">Rampa 04</option>
+                    <option value="Rampa 05">Rampa 05</option>
+                </select>
+
+                <button type="submit" class="btn-primary" style="margin-top: 1rem; width: 100%;">Zarezerwuj okno w WMS</button>
+            </form>
+        }
+    </div>
+
+    <!-- Active Reservations Table View -->
+    <div class="glass-card">
+        <h2 style="font-size: 1.25rem; font-weight: 700; margin-bottom: 1.5rem; color: #fff;">Zarezerwowane sloty rozładunkowe</h2>
+        
+        @if (!slots.Any())
+        {
+            <p style="color: var(--color-text-muted); padding: 1rem 0; text-align: center;">Brak zarezerwowanych slotów w systemie.</p>
+        }
+        else
+        {
+            <div style="overflow-x: auto;">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Centrum (DC)</th>
+                            <th>Termin dostawy</th>
+                            <th>Rampa</th>
+                            <th>Dostawca</th>
+                            <th>Artykuł</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var slot in slots)
+                        {
+                            <tr>
+                                <td><strong>@slot.DcCode</strong></td>
+                                <td>@slot.BookedTime.ToString("dd.MM.yyyy HH:mm")</td>
+                                <td><span style="color: var(--accent-cyan); font-weight: 600;">@slot.BayNumber</span></td>
+                                <td>
+                                    <div style="font-weight: 500;">@slot.PurchaseOrderLine.PurchaseOrder.Supplier.Name</div>
+                                    <div style="font-size: 0.75rem; color: var(--color-text-muted);">ERP PO: @slot.PurchaseOrderLine.PurchaseOrder.ErpOrderNumber</div>
+                                </td>
+                                <td>
+                                    <div>@slot.PurchaseOrderLine.ProductName</div>
+                                    <div style="font-size: 0.75rem; color: var(--color-text-muted);">EAN: @slot.PurchaseOrderLine.ProductCode</div>
+                                </td>
+                                <td>
+                                    <span class="badge badge-confirmed" style="padding: 0.2rem 0.5rem; font-size: 0.65rem;">@slot.Status</span>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+    </div>
+</div>

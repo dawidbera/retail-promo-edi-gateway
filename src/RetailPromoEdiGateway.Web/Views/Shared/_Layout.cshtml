@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="EDI & Supply Chain Gateway do zarządzania dostawami promocji czasowych In & Out." />
+    <title>@ViewData["Title"] - EDI & Supply Chain Gateway</title>
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar Navigation -->
+        <aside class="app-sidebar">
+            <div class="brand-section">
+                <div class="brand-icon">EG</div>
+                <div class="brand-name">EDI Gateway</div>
+            </div>
+            
+            <nav class="nav-section">
+                <ul class="nav-links">
+                    <li class="nav-item @(ViewContext.RouteData.Values["controller"]?.ToString() == "Campaigns" ? "active" : "")">
+                        <a href="@Url.Action("Index", "Campaigns")">
+                            <span class="nav-icon">📊</span>
+                            <span>Kampanie Promocyjne</span>
+                        </a>
+                    </li>
+                    <li class="nav-item @(ViewContext.RouteData.Values["controller"]?.ToString() == "Logistics" ? "active" : "")">
+                        <a href="@Url.Action("Index", "Logistics")">
+                            <span class="nav-icon">🚚</span>
+                            <span>Harmonogram WMS</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+            
+            <div class="sidebar-footer" style="margin-top: auto; font-size: 0.75rem; color: var(--color-text-muted); text-align: center;">
+                v1.0.0 &copy; 2026 EDI Gateway
+            </div>
+        </aside>
+
+        <!-- Main Workspace Area -->
+        <main class="app-main">
+            @RenderBody()
+        </main>
+    </div>
+
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

@@ -1,0 +1,271 @@
+@model List<CampaignDashboardDto>
+@{
+    ViewData["Title"] = "Panel Kampanii Promocyjnych";
+    
+    // Compute aggregations for top level statistics
+    int activeCampaigns = Model.Count(c => c.Status == "Active");
+    int pendingBookings = Model.SelectMany(c => c.Orders).SelectMany(o => o.Lines).Count(l => !l.BookedSlots.Any());
+    int totalMismatches = Model.SelectMany(c => c.Orders).SelectMany(o => o.Lines).Count(l => l.Status == "Mismatched");
+}
+
+<div class="header-section">
+    <div class="page-title">
+        <h1>Monitor Kampanii Promocyjnych</h1>
+        <p>Orkiestracja łańcucha dostaw dla produktów "In & Out"</p>
+    </div>
+</div>
+
+<!-- Alert Hub for Category Managers -->
+@if (totalMismatches > 0 || pendingBookings > 0)
+{
+    <div class="alert-hub">
+        <div class="alert-hub-header">
+            <span>🔔</span> Alert Hub (Aktywne zdarzenia logistyczne)
+        </div>
+        <ul class="alert-list">
+            @if (totalMismatches > 0)
+            {
+                <li class="alert-item">
+                    <div>
+                        <strong>Rozbieżność w potwierdzeniu:</strong> Wykryto @totalMismatches linii zamówień o statusie 
+                        <span class="badge badge-mismatched">Mismatched</span> (niezgodność ilości lub terminu u dostawców).
+                    </div>
+                    <span class="alert-time">Teraz</span>
+                </li>
+            }
+            @if (pendingBookings > 0)
+            {
+                <li class="alert-item" style="border-left-color: var(--accent-amber);">
+                    <div>
+                        <strong>Brakujące okna dostaw:</strong> @pendingBookings linii produktów oczekuje na rezerwację slotu rozładunkowego w WMS.
+                    </div>
+                    <span class="alert-time">Wymagane działanie</span>
+                </li>
+            }
+        </ul>
+    </div>
+}
+
+<!-- Summary Statistics Widgets -->
+<div class="summary-grid">
+    <div class="glass-card stat-card">
+        <div class="stat-icon" style="background: rgba(139, 92, 246, 0.15); color: var(--accent-purple);">🔥</div>
+        <div class="stat-details">
+            <h3>Aktywne Kampanie</h3>
+            <p>@activeCampaigns / @Model.Count</p>
+        </div>
+    </div>
+    <div class="glass-card stat-card">
+        <div class="stat-icon" style="background: rgba(244, 63, 94, 0.15); color: var(--accent-rose);">⚠️</div>
+        <div class="stat-details">
+            <h3>Niezgodności (Mismatches)</h3>
+            <p>@totalMismatches</p>
+        </div>
+    </div>
+    <div class="glass-card stat-card">
+        <div class="stat-icon" style="background: rgba(6, 182, 212, 0.15); color: var(--accent-cyan);">📅</div>
+        <div class="stat-details">
+            <h3>Nieobsługiwane Okna WMS</h3>
+            <p>@pendingBookings</p>
+        </div>
+    </div>
+</div>
+
+<!-- Campaigns List -->
+<div class="campaigns-section">
+    @if (Model == null || !Model.Any())
+    {
+        <div class="glass-card" style="text-align: center; padding: 3rem;">
+            <p style="color: var(--color-text-muted);">Brak aktywnych lub zaplanowanych kampanii promocyjnych.</p>
+        </div>
+    }
+    else
+    {
+        @foreach (var campaign in Model)
+        {
+            <div class="glass-card campaign-card">
+                <div class="campaign-header">
+                    <div>
+                        <h2 style="font-size: 1.35rem; font-weight: 700; margin-bottom: 0.25rem;">@campaign.Name</h2>
+                        <div class="campaign-meta">
+                            <span class="meta-item">Start: <strong>@campaign.StartDate.ToString("dd.MM.yyyy")</strong></span>
+                            <span class="meta-item">Termin w magazynie: <strong>@campaign.DeliveryDeadline.ToString("dd.MM.yyyy")</strong></span>
+                        </div>
+                    </div>
+                    <div>
+                        @if (campaign.Status == "Active")
+                        {
+                            <span class="badge badge-active">Aktywna</span>
+                        }
+                        else
+                        {
+                            <span class="badge badge-scheduled">Zaplanowana</span>
+                        }
+                    </div>
+                </div>
+
+                <!-- Fulfillment Progress -->
+                <div class="progress-container">
+                    <div class="progress-label">
+                        <span>Potwierdzenia od dostawców (Fulfillment):</span>
+                        <strong>@campaign.FulfillmentPercentage%</strong>
+                    </div>
+                    <div class="progress-bar-wrapper">
+                        <div class="progress-bar-fill fill-purple" style="width: @campaign.FulfillmentPercentage%"></div>
+                    </div>
+                </div>
+
+                <!-- Delivery Progress -->
+                <div class="progress-container" style="margin-top: 1rem;">
+                    <div class="progress-label">
+                        <span>Wysłane transporty (DESADV):</span>
+                        <strong>@campaign.DeliveryPercentage%</strong>
+                    </div>
+                    <div class="progress-bar-wrapper">
+                        <div class="progress-bar-fill fill-cyan" style="width: @campaign.DeliveryPercentage%"></div>
+                    </div>
+                </div>
+
+                <!-- Accordion Toggle -->
+                <button class="accordion-toggle" onclick="toggleDetails('@campaign.Id')">
+                    <span id="icon-@campaign.Id">▶</span> Szczegóły zamówień i pozycji dostawców
+                </button>
+
+                <!-- Detailed list of orders -->
+                <div id="details-@campaign.Id" class="accordion-content">
+                    @if (!campaign.Orders.Any())
+                    {
+                        <p style="padding: 1rem; font-size: 0.85rem; color: var(--color-text-muted);">Brak przypisanych zamówień zakupu (PO) w systemie.</p>
+                    }
+                    else
+                    {
+                        @foreach (var order in campaign.Orders)
+                        {
+                            <div style="margin-top: 1.5rem; background: rgba(255,255,255,0.01); border: 1px solid rgba(255,255,255,0.03); border-radius: 12px; padding: 1rem;">
+                                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
+                                    <div>
+                                        <h4 style="font-size: 0.95rem; font-weight: 700;">
+                                            Zamówienie: <span style="color: var(--accent-cyan);">@order.ErpOrderNumber</span>
+                                        </h4>
+                                        <span style="font-size: 0.8rem; color: var(--color-text-muted);">Dostawca: @order.SupplierName (@order.SupplierCode)</span>
+                                    </div>
+                                    <div>
+                                        @if (order.Status == "Confirmed")
+                                        {
+                                            <span class="badge badge-confirmed">Potwierdzone</span>
+                                        }
+                                        else if (order.Status == "Mismatched")
+                                        {
+                                            <span class="badge badge-mismatched">Rozbieżność</span>
+                                        }
+                                        else if (order.Status == "Shipped")
+                                        {
+                                            <span class="badge badge-shipped">Wysyłka (ASN)</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge" style="background: rgba(255,255,255,0.05); color: #fff;">@order.Status</span>
+                                        }
+                                    </div>
+                                </div>
+
+                                <table class="data-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Kod produktu</th>
+                                            <th>Nazwa artykułu</th>
+                                            <th>Zamówiono</th>
+                                            <th>Potwierdzono</th>
+                                            <th>Data żądana</th>
+                                            <th>Data potwierdzona</th>
+                                            <th>Status</th>
+                                            <th>Slot WMS</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var line in order.Lines)
+                                        {
+                                            <tr>
+                                                <td><code>@line.ProductCode</code></td>
+                                                <td>@line.ProductName</td>
+                                                <td>@line.OrderedQty szt.</td>
+                                                <td>
+                                                    <span style="color: @(line.ConfirmedQty < line.OrderedQty && line.Status == "Mismatched" ? "var(--accent-rose)" : "inherit"); font-weight: @(line.Status == "Mismatched" ? "700" : "normal")">
+                                                        @line.ConfirmedQty szt.
+                                                    </span>
+                                                </td>
+                                                <td>@line.RequestedDate.ToString("dd.MM.yyyy")</td>
+                                                <td>
+                                                    @if (line.ConfirmedDate.HasValue)
+                                                    {
+                                                        <span style="color: @(line.ConfirmedDate > campaign.DeliveryDeadline ? "var(--accent-rose)" : "inherit"); font-weight: @(line.ConfirmedDate > campaign.DeliveryDeadline ? "700" : "normal")">
+                                                            @line.ConfirmedDate.Value.ToString("dd.MM.yyyy")
+                                                        </span>
+                                                    }
+                                                    else
+                                                    {
+                                                        <span style="color: var(--color-text-muted); font-size: 0.8rem;">-</span>
+                                                    }
+                                                </td>
+                                                <td>
+                                                    @if (line.Status == "Confirmed")
+                                                    {
+                                                        <span class="badge badge-confirmed" style="padding: 0.15rem 0.45rem; font-size: 0.65rem;">OK</span>
+                                                    }
+                                                    else if (line.Status == "Mismatched")
+                                                    {
+                                                        <span class="badge badge-mismatched" style="padding: 0.15rem 0.45rem; font-size: 0.65rem;">Niezgodny</span>
+                                                    }
+                                                    else if (line.Status == "Shipped")
+                                                    {
+                                                        <span class="badge badge-shipped" style="padding: 0.15rem 0.45rem; font-size: 0.65rem;">Wysłano</span>
+                                                    }
+                                                    else
+                                                    {
+                                                        <span class="badge" style="background: rgba(255,255,255,0.05); padding: 0.15rem 0.45rem; font-size: 0.65rem;">Oczekuje</span>
+                                                    }
+                                                </td>
+                                                <td>
+                                                    @if (line.BookedSlots.Any())
+                                                    {
+                                                        var slot = line.BookedSlots.First();
+                                                        <span style="font-size: 0.8rem; color: var(--accent-cyan); font-weight: 500;" title="Rampa @slot.BayNumber, @slot.DcCode">
+                                                            📅 @slot.BookedTime.ToString("dd.MM HH:mm") (Rampa @slot.BayNumber)
+                                                        </span>
+                                                    }
+                                                    else
+                                                    {
+                                                        <a href="@Url.Action("Index", "Logistics")" style="font-size: 0.75rem; color: var(--accent-amber); text-decoration: underline;">
+                                                            Zarezerwuj slot
+                                                        </a>
+                                                    }
+                                                </td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        }
+                    }
+                </div>
+            </div>
+        }
+    }
+</div>
+
+@section Scripts {
+    <script>
+        function toggleDetails(campaignId) {
+            const content = document.getElementById('details-' + campaignId);
+            const icon = document.getElementById('icon-' + campaignId);
+            
+            if (content.classList.contains('open')) {
+                content.classList.remove('open');
+                icon.textContent = '▶';
+            } else {
+                content.classList.add('open');
+                icon.textContent = '▼';
+            }
+        }
+    </script>
+}
