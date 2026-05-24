@@ -1,0 +1,68 @@
+﻿version: '3.8'
+
+services:
+ db:
+ image: postgres:16-alpine
+ container_name: edigateway-db
+ environment:
+ POSTGRES_USER: admin
+ POSTGRES_PASSWORD: adminpassword
+ POSTGRES_DB: edigateway
+ ports:
+ - "5432:5432"
+ volumes:
+ - pgdata:/var/lib/postgresql/data
+ healthcheck:
+ test: ["CMD-SHELL", "pg_isready -U admin -d edigateway"]
+ interval: 10s
+ timeout: 5s
+ retries: 5
+
+ jaeger:
+ image: jaegertracing/all-in-one:1.55
+ container_name: edigateway-jaeger
+ ports:
+ - "16686:16686" # UI
+ - "4317:4317" # OTLP gRPC receiver (Jaeger direct)
+ - "4318:4318" # OTLP HTTP receiver (Jaeger direct)
+
+ otel-collector:
+ image: otel/opentelemetry-collector-contrib:0.95.0
+ container_name: edigateway-otel-collector
+ command: ["-config=/etc/otel-collector-config.yaml"]
+ volumes:
+ - ./otel-collector-config.yaml:/etc/otel-collector-config.yaml:ro
+ ports:
+ - "8889:8889" # Prometheus metrics exporter
+ - "4327:4317" # Map custom host port to OTLP gRPC receiver to avoid collision if jaeger is bound
+ - "4328:4318" # Map custom host port to OTLP HTTP receiver
+ depends_on:
+ - jaeger
+
+ prometheus:
+ image: prom/prometheus:v2.50.0
+ container_name: edigateway-prometheus
+ volumes:
+ - ./infra/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+ ports:
+ - "9090:9090"
+ extra_hosts:
+ - "host.docker.internal:host-gateway"
+ depends_on:
+ - otel-collector
+
+ grafana:
+ image: grafana/grafana:10.4.0
+ container_name: edigateway-grafana
+ ports:
+ - "3000:3000"
+ environment:
+ - GF_SECURITY_ADMIN_PASSWORD=admin
+ volumes:
+ - grafanadata:/var/lib/grafana
+ depends_on:
+ - prometheus
+
+volumes:
+ pgdata:
+ grafanadata:
