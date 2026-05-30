@@ -244,6 +244,11 @@ namespace RetailEdiGateway.Application.Features.Edi.Commands
             }
         }
 
+        /// <summary>
+        /// Parses the message type string into the <see cref="EdiMessageType"/> enum.
+        /// </summary>
+        /// <param name="messageType">The string representation of the EDI message type.</param>
+        /// <returns>The corresponding <see cref="EdiMessageType"/> value.</returns>
         private static EdiMessageType ParseMessageType(string messageType)
         {
             return messageType.ToUpperInvariant() switch
