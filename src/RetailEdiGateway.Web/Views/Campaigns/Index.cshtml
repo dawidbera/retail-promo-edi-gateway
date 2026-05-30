@@ -15,7 +15,7 @@
  </div>
 </div>
 
-<!- Alert Hub for Category Managers ->
+<!-- Alert Hub for Category Managers -->
 @if (totalMismatches > 0 || pendingBookings > 0)
 {
  <div class="alert-hub">
@@ -46,7 +46,7 @@
  </div>
 }
 
-<!- Summary Statistics Widgets ->
+<!-- Summary Statistics Widgets -->
 <div class="summary-grid">
  <div class="glass-card stat-card">
  <div class="stat-icon" style="background: rgba(139, 92, 246, 0.15); color: var(-accent-purple);">🔥</div>
@@ -71,7 +71,7 @@
  </div>
 </div>
 
-<!- Campaigns List ->
+<!-- Campaigns List -->
 <div class="campaigns-section">
  @if (Model == null || !Model.Any())
  {
@@ -104,7 +104,7 @@
  </div>
  </div>
 
- <!- Fulfillment Progress ->
+ <!-- Fulfillment Progress -->
  <div class="progress-container">
  <div class="progress-label">
  <span>Supplier Fulfillment:</span>
@@ -115,7 +115,7 @@
  </div>
  </div>
 
- <!- Delivery Progress ->
+ <!-- Delivery Progress -->
  <div class="progress-container" style="margin-top: 1rem;">
  <div class="progress-label">
  <span>Shipped Transports (DESADV):</span>
@@ -126,12 +126,12 @@
  </div>
  </div>
 
- <!- Accordion Toggle ->
+ <!-- Accordion Toggle -->
  <button class="accordion-toggle" onclick="toggleDetails('@campaign.Id')">
  <span id="icon-@campaign.Id">▶</span> Order details and supplier items
  </button>
 
- <!- Detailed list of orders ->
+ <!-- Detailed list of orders -->
  <div id="details-@campaign.Id" class="accordion-content">
  @if (!campaign.Orders.Any())
  {

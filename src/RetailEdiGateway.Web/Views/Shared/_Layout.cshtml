@@ -9,39 +9,39 @@
 </head>
 <body>
  <div class="app-container">
- <!- Sidebar Navigation ->
- <aside class="app-sidebar">
- <div class="brand-section">
- <div class="brand-icon">EG</div>
- <div class="brand-name">EDI Gateway</div>
- </div>
- 
- <nav class="nav-section">
- <ul class="nav-links">
- <li class="nav-item @(ViewContext.RouteData.Values["controller"]?.ToString() == "Campaigns" ? "active" : "")">
- <a href="@Url.Action("Index", "Campaigns")">
- <span class="nav-icon">📊</span>
- <span> Campaigns</span>
- </a>
- </li>
- <li class="nav-item @(ViewContext.RouteData.Values["controller"]?.ToString() == "Logistics" ? "active" : "")">
- <a href="@Url.Action("Index", "Logistics")">
- <span class="nav-icon">🚚</span>
- <span>WMS Schedule</span>
- </a>
- </li>
- </ul>
- </nav>
- 
- <div class="sidebar-footer" style="margin-top: auto; font-size: 0.75rem; color: var(-color-text-muted); text-align: center;">
- v1.0.0 &copy; 2026 EDI Gateway
- </div>
- </aside>
+    <!-- Sidebar Navigation -->
+    <aside class="app-sidebar">
+      <div class="brand-section">
+        <div class="brand-icon">EG</div>
+        <div class="brand-name">EDI Gateway</div>
+      </div>
+      
+      <nav class="nav-section">
+        <ul class="nav-links">
+          <li class="nav-item @(ViewContext.RouteData.Values["controller"]?.ToString() == "Campaigns" ? "active" : "")">
+            <a href="@Url.Action("Index", "Campaigns")">
+              <span class="nav-icon">📊</span>
+              <span> Campaigns</span>
+            </a>
+          </li>
+          <li class="nav-item @(ViewContext.RouteData.Values["controller"]?.ToString() == "Logistics" ? "active" : "")">
+            <a href="@Url.Action("Index", "Logistics")">
+              <span class="nav-icon">🚚</span>
+              <span>WMS Schedule</span>
+            </a>
+          </li>
+        </ul>
+      </nav>
+      
+      <div class="sidebar-footer" style="margin-top: auto; font-size: 0.75rem; color: var(-color-text-muted); text-align: center;">
+        v1.0.0 &copy; 2026 EDI Gateway
+      </div>
+    </aside>
 
- <!- Main Workspace Area ->
- <main class="app-main">
- @RenderBody()
- </main>
+    <!-- Main Workspace Area -->
+    <main class="app-main">
+      @RenderBody()
+    </main>
  </div>
 
  @await RenderSectionAsync("Scripts", required: false)

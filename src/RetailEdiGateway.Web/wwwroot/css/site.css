@@ -2,28 +2,28 @@
 @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap');
 
 :root {
- -bg-primary: #090e18;
- -bg-secondary: #101929;
- -glass-bg: rgba(22, 34, 57, 0.45);
- -glass-border: rgba(255, 255, 255, 0.08);
- -glass-highlight: rgba(255, 255, 255, 0.15);
- 
- -color-text-main: #f3f4f6;
- -color-text-muted: #9ca3af;
- 
- -accent-purple: #8b5cf6;
- -accent-purple-glow: rgba(139, 92, 246, 0.4);
- -accent-cyan: #06b6d4;
- -accent-cyan-glow: rgba(6, 182, 212, 0.4);
- -accent-emerald: #10b981;
- -accent-emerald-glow: rgba(16, 185, 129, 0.4);
- -accent-amber: #f59e0b;
- -accent-amber-glow: rgba(245, 158, 11, 0.4);
- -accent-rose: #f43f5e;
- -accent-rose-glow: rgba(244, 63, 94, 0.4);
+  --bg-primary: #090e18;
+  --bg-secondary: #101929;
+  --glass-bg: rgba(22, 34, 57, 0.45);
+  --glass-border: rgba(255, 255, 255, 0.08);
+  --glass-highlight: rgba(255, 255, 255, 0.15);
+  
+  --color-text-main: #f3f4f6;
+  --color-text-muted: #9ca3af;
+  
+  --accent-purple: #8b5cf6;
+  --accent-purple-glow: rgba(139, 92, 246, 0.4);
+  --accent-cyan: #06b6d4;
+  --accent-cyan-glow: rgba(6, 182, 212, 0.4);
+  --accent-emerald: #10b981;
+  --accent-emerald-glow: rgba(16, 185, 129, 0.4);
+  --accent-amber: #f59e0b;
+  --accent-amber-glow: rgba(245, 158, 11, 0.4);
+  --accent-rose: #f43f5e;
+  --accent-rose-glow: rgba(244, 63, 94, 0.4);
 
- -font-family: 'Outfit', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
- -transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  --font-family: 'Outfit', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 * {
@@ -33,13 +33,13 @@
 }
 
 body {
- background-color: var(-bg-primary);
+ background-color: var(--bg-primary);
  background-image: 
  radial-gradient(circle at 10% 20%, rgba(139, 92, 246, 0.08) 0%, transparent 40%),
  radial-gradient(circle at 90% 80%, rgba(6, 182, 212, 0.08) 0%, transparent 40%);
  background-attachment: fixed;
- color: var(-color-text-main);
- font-family: var(-font-family);
+ color: var(--color-text-main);
+ font-family: var(--font-family);
  min-height: 100vh;
  overflow-x: hidden;
  line-height: 1.5;
@@ -56,7 +56,7 @@ body {
 .app-sidebar {
  background: rgba(16, 25, 41, 0.65);
  backdrop-filter: blur(20px);
- border-right: 1px solid var(-glass-border);
+ border-right: 1px solid var(--glass-border);
  padding: 2rem 1.5rem;
  display: flex;
  flex-direction: column;
@@ -72,12 +72,12 @@ body {
 .brand-icon {
  width: 38px;
  height: 38px;
- background: linear-gradient(135deg, var(-accent-purple), var(-accent-cyan));
+ background: linear-gradient(135deg, var(--accent-purple), var(--accent-cyan));
  border-radius: 10px;
  display: flex;
  align-items: center;
  justify-content: center;
- box-shadow: 0 0 15px var(-accent-purple-glow);
+ box-shadow: 0 0 15px var(--accent-purple-glow);
  font-weight: 800;
  font-size: 1.2rem;
  color: #fff;
@@ -105,22 +105,22 @@ body {
  align-items: center;
  gap: 1rem;
  padding: 0.85rem 1.25rem;
- color: var(-color-text-muted);
+ color: var(--color-text-muted);
  text-decoration: none;
  border-radius: 12px;
  font-weight: 500;
- transition: var(-transition-smooth);
+ transition: var(--transition-smooth);
 }
 
 .nav-item a:hover {
  background: rgba(255, 255, 255, 0.03);
- color: var(-color-text-main);
+ color: var(--color-text-main);
  transform: translateX(3px);
 }
 
 .nav-item.active a {
- background: var(-glass-bg);
- border: 1px solid var(-glass-border);
+ background: var(--glass-bg);
+ border: 1px solid var(--glass-border);
  color: #fff;
  box-shadow: inset 0 0 10px rgba(255,255,255,0.02), 0 4px 12px rgba(0,0,0,0.1);
 }
@@ -129,11 +129,11 @@ body {
  content: '';
  width: 4px;
  height: 18px;
- background: var(-accent-cyan);
+ background: var(--accent-cyan);
  border-radius: 2px;
  position: absolute;
  left: 0;
- box-shadow: 0 0 8px var(-accent-cyan-glow);
+ box-shadow: 0 0 8px var(--accent-cyan-glow);
 }
 
 /* Main Panel Area */
@@ -159,23 +159,23 @@ body {
 }
 
 .page-title p {
- color: var(-color-text-muted);
+ color: var(--color-text-muted);
  font-size: 0.95rem;
 }
 
 /* Glassmorphism Cards */
 .glass-card {
- background: var(-glass-bg);
+ background: var(--glass-bg);
  backdrop-filter: blur(16px);
- border: 1px solid var(-glass-border);
+ border: 1px solid var(--glass-border);
  border-radius: 20px;
  padding: 1.5rem;
  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
- transition: var(-transition-smooth);
+ transition: var(--transition-smooth);
 }
 
 .glass-card:hover {
- border-color: var(-glass-highlight);
+ border-color: var(--glass-highlight);
  transform: translateY(-2px);
  box-shadow: 0 12px 40px 0 rgba(0, 0, 0, 0.5);
 }
@@ -206,7 +206,7 @@ body {
 
 .stat-details h3 {
  font-size: 0.85rem;
- color: var(-color-text-muted);
+ color: var(--color-text-muted);
  text-transform: uppercase;
  letter-spacing: 1px;
 }
@@ -231,32 +231,32 @@ body {
 
 .badge-active {
  background: rgba(139, 92, 246, 0.15);
- color: var(-accent-purple);
+ color: var(--accent-purple);
  border: 1px solid rgba(139, 92, 246, 0.3);
 }
 
 .badge-scheduled {
  background: rgba(6, 182, 212, 0.15);
- color: var(-accent-cyan);
+ color: var(--accent-cyan);
  border: 1px solid rgba(6, 182, 212, 0.3);
 }
 
 .badge-confirmed {
  background: rgba(16, 185, 129, 0.15);
- color: var(-accent-emerald);
+ color: var(--accent-emerald);
  border: 1px solid rgba(16, 185, 129, 0.3);
 }
 
 .badge-mismatched {
  background: rgba(244, 63, 94, 0.15);
- color: var(-accent-rose);
+ color: var(--accent-rose);
  border: 1px solid rgba(244, 63, 94, 0.3);
  animation: pulse-border 2s infinite;
 }
 
 .badge-shipped {
  background: rgba(245, 158, 11, 0.15);
- color: var(-accent-amber);
+ color: var(--accent-amber);
  border: 1px solid rgba(245, 158, 11, 0.3);
 }
 
@@ -295,7 +295,7 @@ body {
 
 .meta-item {
  font-size: 0.85rem;
- color: var(-color-text-muted);
+ color: var(--color-text-muted);
 }
 
 .meta-item strong {
@@ -328,12 +328,12 @@ body {
 }
 
 .fill-purple {
- background: linear-gradient(to right, var(-accent-purple), #a78bfa);
+ background: linear-gradient(to right, var(--accent-purple), #a78bfa);
  box-shadow: 0 0 10px rgba(139, 92, 246, 0.5);
 }
 
 .fill-cyan {
- background: linear-gradient(to right, var(-accent-cyan), #22d3ee);
+ background: linear-gradient(to right, var(--accent-cyan), #22d3ee);
  box-shadow: 0 0 10px rgba(6, 182, 212, 0.5);
 }
 
@@ -341,7 +341,7 @@ body {
 .accordion-toggle {
  background: none;
  border: none;
- color: var(-accent-cyan);
+ color: var(--accent-cyan);
  cursor: pointer;
  font-weight: 600;
  display: flex;
@@ -349,7 +349,7 @@ body {
  gap: 0.5rem;
  font-size: 0.9rem;
  padding: 0.5rem 0;
- transition: var(-transition-smooth);
+ transition: var(--transition-smooth);
 }
 
 .accordion-toggle:hover {
@@ -381,14 +381,14 @@ body {
 
 .data-table th {
  font-size: 0.8rem;
- color: var(-color-text-muted);
+ color: var(--color-text-muted);
  text-transform: uppercase;
  letter-spacing: 0.5px;
 }
 
 .data-table td {
  font-size: 0.9rem;
- color: var(-color-text-main);
+ color: var(--color-text-main);
 }
 
 .data-table tr:hover td {
@@ -408,7 +408,7 @@ body {
  display: flex;
  align-items: center;
  gap: 0.75rem;
- color: var(-accent-rose);
+ color: var(--accent-rose);
  font-weight: 700;
  margin-bottom: 0.75rem;
  font-size: 1.05rem;
@@ -426,14 +426,14 @@ body {
  background: rgba(244, 63, 94, 0.05);
  padding: 0.6rem 1rem;
  border-radius: 8px;
- border-left: 3px solid var(-accent-rose);
+ border-left: 3px solid var(--accent-rose);
  display: flex;
  justify-content: space-between;
  align-items: center;
 }
 
 .alert-time {
- color: var(-color-text-muted);
+ color: var(--color-text-muted);
  font-size: 0.75rem;
 }
 
@@ -447,30 +447,30 @@ body {
 .booking-form select, .booking-form input {
  width: 100%;
  background: rgba(16, 25, 41, 0.8);
- border: 1px solid var(-glass-border);
+ border: 1px solid var(--glass-border);
  padding: 0.75rem 1rem;
  border-radius: 10px;
  color: #fff;
- font-family: var(-font-family);
+ font-family: var(--font-family);
  margin-bottom: 1.25rem;
- transition: var(-transition-smooth);
+ transition: var(--transition-smooth);
 }
 
 .booking-form select:focus, .booking-form input:focus {
- border-color: var(-accent-cyan);
+ border-color: var(--accent-cyan);
  outline: none;
 }
 
 .btn-primary {
- background: linear-gradient(135deg, var(-accent-purple), var(-accent-cyan));
+ background: linear-gradient(135deg, var(--accent-purple), var(--accent-cyan));
  color: #fff;
  border: none;
  padding: 0.85rem 1.75rem;
  border-radius: 10px;
  font-weight: 600;
  cursor: pointer;
- box-shadow: 0 4px 15px var(-accent-purple-glow);
- transition: var(-transition-smooth);
+ box-shadow: 0 4px 15px var(--accent-purple-glow);
+ transition: var(--transition-smooth);
 }
 
 .btn-primary:hover {
@@ -487,18 +487,18 @@ body {
 .temp-alert-success {
  background: rgba(16, 185, 129, 0.15);
  border: 1px solid rgba(16, 185, 129, 0.3);
- color: var(-accent-emerald);
+ color: var(--accent-emerald);
 }
 
 .temp-alert-error {
  background: rgba(244, 63, 94, 0.15);
  border: 1px solid rgba(244, 63, 94, 0.3);
- color: var(-accent-rose);
+ color: var(--accent-rose);
 }
 
 .temp-alert-warning {
  background: rgba(245, 158, 11, 0.15);
  border: 1px solid rgba(245, 158, 11, 0.3);
- color: var(-accent-amber);
+ color: var(--accent-amber);
  animation: pulse-border 2s infinite;
 }
