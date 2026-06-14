@@ -6,17 +6,27 @@ The **EDI & Supply Chain Gateway** is an enterprise-grade integration middleware
 It automates procurement, tracks shipping notifications, and manages warehouse slots to ensure on-time delivery for time-critical windows.
 
 ### Screenshots
+
+#### Business Dashboards
 | Campaign Monitor | WMS Unloading Schedule |
 | :--- | :--- |
 | ![Campaigns Dashboard](images/Campaigns.jpg) | ![WMS Schedule](images/WMSUnloadingSchedule.jpg) |
 
-| ASP.NET Core Metrics | Jaeger Traces |
+#### Observability & Monitoring (OpenTelemetry Stack)
+| ASP.NET Core Metrics (Grafana) | Jaeger Traces |
 | :--- | :--- |
-| ![ASP.NET Core Metrics](images/RetailEdiGateway.Web.jpg) | ![Jaeger Traces](images/jaeger.jpg) |
+| ![Metrics](images/RetailEdiGateway.Web.jpg) | ![Jaeger](images/jaeger.jpg) |
 
 | Grafana Loki Logs | Prometheus Dashboard |
 | :--- | :--- |
-| ![Loki Logs](images/loki.jpg) | ![Prometheus](images/prometheus.jpg) |
+| ![Loki](images/loki.jpg) | ![Prometheus](images/prometheus.jpg) |
+
+#### CI/CD & API Documentation
+| Jenkins CI/CD Pipeline | Swagger UI (API Docs) |
+| :--- | :--- |
+| ![Jenkins Pipeline](images/jenkins.jpg) | ![Swagger UI](images/swagger.jpg) |
+
+> **API Documentation:** The interactive Swagger UI is accessible at `/swagger` when running in `Development` mode.
 
 ## 2. Key Features
 * **Campaign Tracking Dashboard:** Monitor fulfillment and delivery status of campaigns.

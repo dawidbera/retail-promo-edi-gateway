@@ -89,6 +89,25 @@ builder.Services.AddControllersWithViews();
 builder.Services.AddHealthChecks()
  .AddDbContextCheck<ApplicationDbContext>("PostgreSQL");
 
+// Configure Swagger/OpenAPI documentation
+builder.Services.AddSwaggerGen(options =>
+{
+    options.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo
+    {
+        Title = "Retail EDI & Logistics Gateway API",
+        Version = "v1",
+        Description = "Enterprise-grade integration API for orchestrating retail campaigns, EDI transactions, and warehouse logistics."
+    });
+
+    // Integrate XML documentation comments into Swagger UI for rich endpoint descriptions
+    var xmlFile = $"{System.Reflection.Assembly.GetExecutingAssembly().GetName().Name}.xml";
+    var xmlPath = System.IO.Path.Combine(System.AppContext.BaseDirectory, xmlFile);
+    if (System.IO.File.Exists(xmlPath))
+    {
+        options.IncludeXmlComments(xmlPath);
+    }
+});
+
 var app = builder.Build();
 
 // Auto-migrate database on startup if running in development (safest fallback helper)
@@ -110,6 +129,16 @@ if (!app.Environment.IsDevelopment())
 {
  app.UseExceptionHandler("/Home/Error");
  app.UseHsts();
+}
+else
+{
+    // Enable Swagger and Swagger UI for API exploration in Development mode
+    app.UseSwagger();
+    app.UseSwaggerUI(c =>
+    {
+        c.SwaggerEndpoint("/swagger/v1/swagger.json", "Retail EDI Gateway API v1");
+        c.RoutePrefix = "swagger"; // Endpoint accessible at /swagger
+    });
 }
 
 app.UseHttpsRedirection();
