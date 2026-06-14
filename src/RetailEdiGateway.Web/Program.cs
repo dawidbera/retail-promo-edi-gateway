@@ -1,4 +1,4 @@
-﻿//-
+//-
 // <copyright file="Program.cs">
 // Entry point and bootstrap configuration for the Retail EDI and Logistics Gateway.
 // Configures Serilog structured logging, EF Core PostgreSQL context, MediatR CQRS, memory caching,
@@ -25,9 +25,18 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Configure Serilog structured logging
 Log.Logger = new LoggerConfiguration()
- .WriteTo.Console()
- .WriteTo.File("C:\\Logs\\EDIGateway\\log-.txt", rollingInterval: RollingInterval.Day)
- .CreateLogger();
+    .WriteTo.Console()
+    .WriteTo.File("C:\\Logs\\EDIGateway\\log-.txt", rollingInterval: RollingInterval.Day)
+    .WriteTo.OpenTelemetry(options =>
+    {
+        options.Endpoint = "http://localhost:5317";
+        options.Protocol = Serilog.Sinks.OpenTelemetry.OtlpProtocol.Grpc;
+        options.ResourceAttributes = new Dictionary<string, object>
+        {
+            ["service.name"] = "RetailEdiGateway.Web"
+        };
+    })
+    .CreateLogger();
 
 builder.Host.UseSerilog();
 
@@ -67,7 +76,7 @@ builder.Services.AddOpenTelemetry()
  .AddHttpClientInstrumentation()
  .AddOtlpExporter(opt =>
  {
- opt.Endpoint = new Uri("http://localhost:4317"); // Jaeger direct gRPC
+ opt.Endpoint = new Uri("http://localhost:5317"); // Send to OTel Collector
  }))
  .WithMetrics(metrics => metrics
  .AddAspNetCoreInstrumentation()

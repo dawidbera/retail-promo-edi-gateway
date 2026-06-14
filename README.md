@@ -10,6 +10,14 @@ It automates procurement, tracks shipping notifications, and manages warehouse s
 | :--- | :--- |
 | ![Campaigns Dashboard](images/Campaigns.jpg) | ![WMS Schedule](images/WMSUnloadingSchedule.jpg) |
 
+| ASP.NET Core Metrics | Jaeger Traces |
+| :--- | :--- |
+| ![ASP.NET Core Metrics](images/RetailEdiGateway.Web.jpg) | ![Jaeger Traces](images/jaeger.jpg) |
+
+| Grafana Loki Logs | Prometheus Dashboard |
+| :--- | :--- |
+| ![Loki Logs](images/loki.jpg) | ![Prometheus](images/prometheus.jpg) |
+
 ## 2. Key Features
 * **Campaign Tracking Dashboard:** Monitor fulfillment and delivery status of campaigns.
 * **PO Processing:** Simulated outbound EDI transaction queuing (EDIFACT `ORDERS` placeholder).
@@ -69,9 +77,17 @@ For high-traffic production environments, the following IIS settings are recomme
 * **.NET 8 SDK**
 * **PostgreSQL 16+** (PostgreSQL 18.4 recommended)
 * **EF Core CLI Tools:** `dotnet tool install -global dotnet-ef`
+* **Docker & Docker Compose:** Required for running the Observability Stack.
 
 ### Installation & Execution
-1. **Restore & Build:**
+1. **Observability Stack (Optional but Recommended):**
+ Start the monitoring infrastructure (Prometheus, Jaeger, Loki, Grafana):
+ ```powershell
+ docker-compose up -d
+ ```
+ Access the dashboards at `http://localhost:3000` (Grafana).
+
+2. **Restore & Build:**
  ```powershell
  dotnet restore
  dotnet build
@@ -194,10 +210,11 @@ graph TB
     end
 
     subgraph Observability ["Observability Stack"]
-        OTel[OpenTelemetry SDK]
+        OTelColl[OpenTelemetry Collector]
         Prom[Prometheus]
         Jaeger[Jaeger]
-        Grafana[Grafana / Loki / Tempo]
+        Loki[Grafana Loki]
+        Grafana[Grafana Dashboards]
     end
 
     %% CI/CD Flow
@@ -222,11 +239,13 @@ graph TB
     WMSSync -- "Sync Logistics" --> WMS_EXT
 
     %% Telemetry Flows
-    GatewayApp -- "Metrics/Traces/Logs" --> OTel
-    OTel -- "Scrape" --> Prom
-    OTel -- "Export" --> Jaeger
+    GatewayApp -- "Traces/Metrics/Logs (OTLP)" --> OTelColl
+    OTelColl -- "Export Metrics" --> Prom
+    OTelColl -- "Export Traces" --> Jaeger
+    OTelColl -- "Export Logs" --> Loki
     Prom --> Grafana
     Jaeger --> Grafana
+    Loki --> Grafana
 ```
 
 ## 8. Monitoring & Maintenance
